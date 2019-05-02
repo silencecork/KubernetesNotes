@@ -428,7 +428,7 @@ spec:
       periodSeconds: 1
       failureThreshold: 10</b>
 </pre>
-
+***
 ### Logs
 ``
 kubectl logs -f [pod name]
