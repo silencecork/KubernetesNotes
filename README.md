@@ -89,8 +89,7 @@ metadata:
   MY_MAP_KEY_1: VALUE_1
   MY_MAP_KEY_2: VALUE_2</b>
 </pre>
-#### Environment Variable
-##### Define Directly
+#### Environment Variable define Directly
 <pre>
 apiVersion: v1
 kind: Pod
