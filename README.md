@@ -1,4 +1,6 @@
-### Deployment
+Deployment
+===
+
 <pre>
 apiVersion: apps/v1
 <b>kind: Deployment</b>
@@ -19,8 +21,10 @@ spec:
       - name: test-pod-container
         image: nginx
 </pre>
-***
-### Commands
+
+Commands
+===
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -47,9 +51,13 @@ spec:
     <b>command: ["sleep"]
     args: ["--time", "1000"]</b>
 </pre>
-***
-### Config Map
-#### Define ConfigMap
+
+Config Map
+===
+
+Define ConfigMap
+---
+
 <pre>
 apiVersion: v1
 kind: ConfigMap
@@ -59,7 +67,10 @@ metadata:
   MY_MAP_KEY_1: VALUE_1
   MY_MAP_KEY_2: VALUE_2</b>
 </pre>
-#### Environment Variable define Directly
+
+Environment Variable define Directly
+---
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -73,7 +84,10 @@ spec:
     - name: MY_KEY_1
       value: VALUE_1
 </pre>
-#### Use ConfigMap
+
+Use ConfigMap
+---
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -87,7 +101,10 @@ spec:
       - configMapRef:
           name: <font color='green'>my-config-map</font></b>
 </pre>
-#### Use ConfigMap and search by key 
+
+Use ConfigMap and search by key 
+---
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -104,7 +121,10 @@ spec:
           name: <font color='green'>my-config-map</font>
           key: MY_MAP_KEY_1</b>
 </pre>
-#### Mount ConfigMap as Volume
+
+Mount ConfigMap as Volume
+---
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -122,9 +142,13 @@ spec:
     - name: my-volume
       mountPath: "/etc/config"</b>
 </pre>
-***
-### Secret
-#### Define Secret
+
+Secret
+===
+
+Define Secret
+---
+
 <pre>
 apiVersion: v1
 <b>kind: Secret</b>
@@ -133,7 +157,10 @@ metadata:
 data: 
   SECRET_1: <b>base64(</b>VALUE_1<b>)</b>
 </pre>
-#### Use command for base64 encode
+
+Use command for base64 encode
+---
+
 ##### Encode
 ```console
 $ echo -n 'xxxx' | base64
@@ -142,7 +169,10 @@ $ echo -n 'xxxx' | base64
 ```console
 $ echo -n 'eHh4eAo=' | base64 --decode
 ```
-#### Use in Pod as whole env variable
+
+Use in Pod as whole env variable
+---
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -156,7 +186,10 @@ spec:
     - secretRef:
         name: my-secret</b>
 </pre>
-#### Use in Pod as value reference of env variable
+
+Use in Pod as value reference of env variable
+---
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -173,7 +206,10 @@ spec:
           name: my-secret
           key: SECRET_1</b>
 </pre>
-#### Mount Secret as Volume
+
+Mount Secret as Volume
+---
+
 <pre>
 apVersion: v1
 kind: Pod
@@ -192,12 +228,15 @@ spec:
       mountPath: "/etc/foo"
       readOnly: false</b>
 </pre>
-***
-### Security Context
+
+Security Context
+===
+
 Let Pod run as specific level of User
 <br>Pod can set user and container can overwrite it
 <br>use **capabilities** to add permission
 <br>**only container** can use capabilities
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -214,13 +253,20 @@ spec:
       capabilities:
         add: ["SYS_TIME"]</b>
 </pre>
-***
-### Service Account
-#### Create sevice account
+
+Service Account
+===
+
+Create sevice account
+---
+
 ```console
 $ kubectl create serviceaccount [NAME]
 ```
-#### Check tokens
+
+Check tokens
+---
+
 ```console
 $ kubectl describe serviceaccount [NAME]
 ```
@@ -229,7 +275,10 @@ $ kubectl describe serviceaccount [NAME]
 $ kubectl describe secrets [TOKENS_NAME]
 ```
 <br>You can find real token
-#### Use service account in Deployment
+
+Use service account in Deployment
+---
+
 <pre>
 apiVersion: apps/v1
 kind: Deployment
@@ -250,10 +299,15 @@ spec:
       - name: my-deployment-container
         image: nginx
 </pre>
-***
-### Resource
-##### default is 0.5 CPU and 256 Mi
-#### Define Resource in Pod
+
+Resource
+===
+
+#### default is 0.5 CPU and 256 Mi
+
+Define Resource in Pod
+---
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -273,24 +327,33 @@ spec:
         memory: "2Gi"
         cpu: 4</b>
 </pre>
-***
-### Taints and Tolerations
+
+Taints and Tolerations
+===
+
 - Taint on Node
 - Tolerant on Pod
-#### Add taint to node
+
+Add taint to node
+---
+
 ```console 
 $ kubectl taint node [node name] [taint name]:[effect] 
 ```
 - [taint name]: could be a <b>[traint key]=[traint value]</b> or a name like node-role.kubernetes.io/master
 - [effect]: NoSchedule / NoExecute / PreferNoSchedule
 
-#### Remove taint from node
+Remove taint from node
+---
+
 ```console
 $ kubectl taint node [node name] [taint name]-
 ```
-##### Remember! add minus(-) at last...
+#### Remember! add minus(-) at last...
 
-#### Add tolerations to Pod
+Add tolerations to Pod
+---
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -306,14 +369,18 @@ spec:
   - name: my-pod-container
     image: nginx
 </pre>
-##### Taint only can prevent pod executed on specific Node, but it can NOT let Pod executed on specific Node!
-***
-### Node Selector, Node Affinity
+#### Taint only can prevent pod executed on specific Node, but it can NOT let Pod executed on specific Node!
 
-#### Why we need affinity? 
-##### Node Selector not support OR or NOT options
+Node Selector, Node Affinity
+===
 
-#### Add Label to Node:
+Why we need affinity? 
+---
+#### Node Selector not support OR or NOT options
+
+Add Label to Node
+---
+
 ```console
 $ kubectl label node <NODE name> [key]=[value]
 ```
@@ -322,7 +389,9 @@ e.g.
 $ kubectl label node node01 size=Large
 ```
 
-#### Create Node Selector on Pod:
+Create Node Selector on Pod
+---
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -336,7 +405,9 @@ spec:
     [key]: [value] </b>
 </pre>
 
-#### Use Node Affinity
+Use Node Affinity
+---
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -356,7 +427,7 @@ spec:
           - [value1]
           - [value2] </b>
 </pre>
-##### operator got <font color='green'>In</font>, <font color='brown'>NotIn</font>, <font color='yellow'>Exists</font> ...
+#### operator got In, NotIn, Exists ...
 
 
 #### If you want make sure pod executed in specific node, and other pod can not execute in
@@ -365,12 +436,15 @@ spec:
 2. set Tolerations on Pod
 3. set label to node
 4. set node affinity on Pod
-***
-### Multicontainer Pod
+
+Multicontainer Pod
+===
 
 Empty...
-***
-### Readiness & Liveness
+
+Readiness & Liveness
+===
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -398,8 +472,10 @@ spec:
       periodSeconds: 1
       failureThreshold: 10</b>
 </pre>
-***
-### Logs
+
+Logs
+===
+
 ```console
 $ kubectl logs -f [pod name]
 ```
@@ -407,14 +483,22 @@ $ kubectl logs -f [pod name]
 ```console
 $ kubectl logs -f [pod name] [container name] 
 ```
-***
-### Selector
+
+Selector
+===
+
 ```console
-$ kubectl get [resource] --selector label_key=label_value --selector label_key=label_value
+$ kubectl get [resource] \
+--selector label_key=label_value \
+--selector label_key=label_value
 ```
-***
-### Rolling Update & Rollback
-#### Strategy - Recreate
+
+Rolling Update & Rollback
+===
+
+Strategy - Recreate
+---
+
 <pre>
 apiVersion: apps/v1
 kind: Deployment
@@ -429,7 +513,10 @@ spec:
     strategy:
       type: Recreate</b>
 </pre>
-#### Strategy - RollingUpdate (Default)
+
+Strategy - RollingUpdate (Default)
+---
+
 <pre><b>
   strategy:
     type: RollingUpdate
@@ -448,33 +535,52 @@ spec:
         ports:
         - containerPort: 8080
 </pre>
-#### Begin Rollout
+
+Begin Rollout
+---
+
 ```console
 $ kubectl create -f myapp-deployment.yml
 ```
-#### Check Rollout status
+
+Check Rollout status
+---
+
 ```console
 $ kubectl rollout status deployment/myapp-deployment
 ```
-#### Check Rollout history
+
+Check Rollout history
+---
+
 ```console
 $ kubectl rollout history deployment/myapp-deployment
 ```
-#### Rollout new version
+
+Rollout new version
+---
+
 ```console
 $ kubectl apply -f myapp-deployment-new.yml
 ```
-<br> or <br>
+or
 ```console
 $ kubectl set image deployment/myapp-deployment [container name]=[image name]
 ```
-#### Rollback
+
+Rollback
+---
+
 ```console
 $ kubectl rollout undo deployment/myapp-deployment
 ```
-***
-### Jobs & CronJob
-#### Jobs
+
+Jobs & CronJob
+===
+
+Jobs
+---
+
 <pre>
 apiVersion: batch/v1
 kind: Job
@@ -491,7 +597,9 @@ spec:<b>
       <b>restartPolicy: Never</b>
 </pre>
 
-#### CronJob 
+CronJob 
+---
+
 ##### CronJob is Cron schedule define and include job spec
 <pre>
 apiVersion: batch/v1beta1
@@ -521,9 +629,13 @@ spce:
             image: nginx
           restartPolicy: Never
 </pre>        
-***
-### Service
-#### NodePort
+
+Service
+===
+
+NodePort
+---
+
 <pre>
 apiVersion: v1
 <b>kind: Service</b>
@@ -539,7 +651,10 @@ spec:
     app: my-app
     type: frontend
 </pre>
-#### ClusterIP (Default)
+
+ClusterIP (Default)
+---
+
 <pre>
 apiVersion: v1
 <b>kind: Service</b>
@@ -554,14 +669,17 @@ spec:
     app: my-app
     type: frontend
 </pre>
-***
-### Network Policy
-```shell
+
+Network Policy
+===
+
+```console
 $ kubectl get networkpolicy
 ```
-<br>K8S default not support Network Policy
+##### K8S default not support Network Policy
 
-#### Ingress
+Ingress
+---
 ##### The network traffic to a Pod
 
 <pre>
@@ -586,7 +704,9 @@ spec:
       port: 8080</b>
 </pre>
 
-#### Egress
+Egress
+---
+
 ##### Network traffic from Pod to somewhere
 <pre>
 apiVersion: networking.k8s.io/v1
@@ -609,15 +729,20 @@ spec:
     - port: 3306
       protocol: TCP
 </pre>
-***
-### Volume & PersistentVolume & PersistentVolumeClaim
+
+Volume & PersistentVolume & PersistentVolumeClaim
+===
+
 ```console
 $ kubectl get pv
 ```
 ```console
 $ kubectl get pvc
 ```
-#### Define a Volume
+
+Define a Volume
+---
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -636,7 +761,10 @@ spec:
     - mountPath: [container path]
       name: <font color='red'>my-volume</font></b>
 </pre>
-#### Define a PersistentVolume
+
+Define a PersistentVolume
+---
+
 <pre>
 apiVersion: v1
 <b>kind: PersistentVolume</b>
@@ -651,8 +779,11 @@ metadata:
     path: [Host path]
   peristentVolumeReclaimPolicy: Retain</b>
 </pre>
-#### Define a PersistentVolume
-##### on host
+
+Define a PersistentVolume
+---
+
+#### on host
 <pre>
 apiVersion: v1
 <b>kind: PersistentVolume</b>
@@ -667,7 +798,7 @@ metadata:
     path: [Host path]
   peristentVolumeReclaimPolicy: Retain</b>
 </pre>
-##### on NFS
+#### on NFS
 <pre>
 apiVersion: v1
 <b>kind: PersistentVolume</b>
@@ -683,7 +814,10 @@ spec:
     server: [NFS server]</b>
   peristentVolumeReclaimPolicy: Retain
 </pre>
-#### Use in Pod
+
+Use in Pod
+---
+
 <pre>
 apiVersion: v1
 kind: Pod
@@ -708,156 +842,200 @@ spec:
     - mountPath: [containers path]
       name: <font color='yellow'>my-pvc-name</font></b>
 </pre>
-***
-### Kubectl Commands
-#### Nodes
+
+Kubectl Commands
+===
+
+Nodes
+---
+
 ```console
 $ kubectl get nodes
 $ kubectl get node [NAME] -o wide (or yaml or json)
 $ kubectl get nodes --show-labels
 ```
-#### Label
-##### set Label to a node
+
+Label
+---
+
+#### set Label to a node
 ```console
 $ kubectl label node [NAME] key=value
 ```
-##### remove Label from a node
+#### remove Label from a node
 ```console
 $ kubectl label node [NAME] key-
 ```
-#### Role
-##### set Role to a node
+
+Role
+---
+
+#### set Role to a node
 ```console
 $ kubectl label node [NAME] \ 
 node-role.kubernetes.io/[role]=\
 node-role.kubernetes.io/master=
 ```
-#### Context
-##### get all Contexts
+
+Context
+---
+
+#### get all Contexts
 ```console
 $ kubectl config get-contexts
 ```
-##### change Context
+#### change Context
 ```console
 $ kubectl config set current-context [context name]
 ```
 ```console
 $ kubectl config use-context [context name]
 ```
-##### delete Context
+#### delete Context
 ```console
 $ kubectl config delete-context [NAME]
 ```
-#### Pod
-##### get Pods
+
+Pod
+---
+
+#### get Pods
 ```console
 $ kubectl get pods (--all-namespaces) (--namespace=[space name])
 $ kubectl get po
 ```
-##### execute command in Pod
+#### execute command in Pod
 ```console
 $ kubectl exec [pod name] -it sh (or other command)
 ```
-##### execute command in container of Pod
+#### execute command in container of Pod
 ```console
 $ kubectl exec [pod name] -c [container name] -it sh (or other command)
 ```
-##### delete a Pod
+#### delete a Pod
 ```console
 $ kubectl delete pod [NAME]
 $ kubectl delete po [NAME]
 ```
-#### Namespace
-##### get all Namespaces
+
+Namespace
+---
+
+#### get all Namespaces
 ```console
 $ kubectl get namespace
 $ kubectl get ns
 ```
-##### create a Namespace
+#### create a Namespace
 ```console
 $ kubectl create namespace [NAME]
 $ kubectl create ns [NAME]
 ```
-##### delete a Namespace
+#### delete a Namespace
 ```console
 $ kubectl delete namespace [NAME]
 $ kubectl delete ns [NAME]
 ```
-#### Deployment
-##### get all Deployments
+
+Deployment
+---
+
+#### get all Deployments
 ```console
 $ kubectl get deployment
 $ kubectl get deploy
 ```
-##### delete a Deployment
+#### delete a Deployment
 ```console
 $ kubectl delete deployment [NAME]
 $ kubectl delete deploy [NAME]
 ```
-##### scale a Deployment
+#### scale a Deployment
 ```console
 $ kubectl scale --current-replicas=[num] --replicas=[num] deployment/[NAME]
 ```
-##### rollout
-###### rollout a Deployment
+#### rollout
+##### rollout a Deployment
 ```console
 $ kubectl set image deployment/[NAME] [container name]=[image name]:[new version]
 ```
-###### rollout status
+##### rollout status
 ```console
 $ kubectl rollout status deployment/[NAME]
 ```
-###### rollout history
+##### rollout history
 ```console
 $ kubectl rollout history deployment/[NAME]
 ```
-###### check difference between rollout history
+##### check difference between rollout history
 ```console
 $ kubectl rollout history deployment/[NAME] --revision=[num]
 ```
-###### undo rollout
+##### undo rollout
 ```console
 $ kubectl rollout undo deployment/[NAME]
 ```
-###### undo rollout to specific version
+##### undo rollout to specific version
 ```console
 $ kubectl rollout undo deployment/[NAME] --to-revision=[num]
 ```
-#### ReplicaSet
-##### get all ReplicaSet
+
+ReplicaSet
+---
+
+#### get all ReplicaSet
 ```console
 $ kubectl get replicaset
 $ kubectl get rs
 ```
-##### 
-***
-### Create Pod YAML Tips
-#### Create an NGINX Pod
-``
-kubectl run --generator=run-pod/v1 nginx --image=nginx
-``
 
-#### Generate POD Manifest YAML file (-o yaml). Don't create it(--dry-run)
-``
-kubectl run --generator=run-pod/v1 nginx --image=nginx --dry-run -o yaml
-``
-#### Create a deployment
-``
-kubectl run --generator=deployment/v1beta1 nginx --image=nginx
-``
-#### Generate Deployment YAML file (-o yaml). Don't create it(--dry-run)
-``
-kubectl run --generator=deployment/v1beta1 nginx --image=nginx --dry-run -o yaml
-``
-#### with 4 replicas
-``
-kubectl run --generator=deployment/v1beta1 nginx --image=nginx --dry-run --replicas=4 -o yaml
-``
-#### Save it to a file
-``
-kubectl run --generator=deployment/v1beta1 nginx --image=nginx --dry-run --replicas=4 -o yaml > nginx-deployment.yaml
-``
+Create Pod YAML Tips
+===
 
-#### Output Yaml from running Pod
-``kubectl get po <name> -o yaml --export > file.yml``
-***
+Create an NGINX Pod
+---
+
+```shell
+$ kubectl run --generator=run-pod/v1 nginx --image=nginx
+```
+
+Generate POD Manifest YAML file (-o yaml). Don't create it(--dry-run)
+---
+
+
+```shell
+$ kubectl run --generator=run-pod/v1 nginx --image=nginx --dry-run -o yaml
+```
+
+Create a deployment
+---
+
+```shell
+$ kubectl run --generator=deployment/v1beta1 nginx --image=nginx
+```
+
+Generate Deployment YAML file (-o yaml). Don't create it(--dry-run)
+---
+
+```shell
+$ kubectl run --generator=deployment/v1beta1 nginx --image=nginx --dry-run -o yaml
+```
+
+##### with 4 replicas
+```shell
+$ kubectl run --generator=deployment/v1beta1 nginx --image=nginx --dry-run --replicas=4 -o yaml
+```
+
+Save it to a file
+---
+
+```shell
+$ kubectl run --generator=deployment/v1beta1 nginx --image=nginx --dry-run --replicas=4 -o yaml > nginx-deployment.yaml
+```
+
+Output Yaml from running Pod
+---
+
+```shell
+$ kubectl get po <name> -o yaml --export > file.yml
+```
